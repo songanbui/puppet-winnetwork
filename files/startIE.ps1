@@ -27,6 +27,6 @@ Stop-Process -Name iexplore -Force -ErrorAction SilentlyContinue;
 }
 
 # Delete this file
-$CurrentScriptFullPathName = $MyInvocation.MyCommand.Definition
-Remove-Item $CurrentScriptFullPathName
+#$CurrentScriptFullPathName = $MyInvocation.MyCommand.Definition
+#Remove-Item $CurrentScriptFullPathName
 exit 0;
