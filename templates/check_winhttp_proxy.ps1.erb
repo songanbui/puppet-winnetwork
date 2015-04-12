@@ -1,0 +1,6 @@
+$netshOutput = (netsh winhttp show proxy) | Out-String -Stream
+$proxyServer = ($netshOutput[3] -split ':',2).trim()[1]
+if($proxyServer -ne "<%= @proxy_host %>:<%= @proxy_port %>") { exit 1 }
+$proxyBypass = ($netshOutput[4] -split ':',2).trim()[1]
+if($proxyBypass -ne "<%= @proxy_bypass %>") { exit 1 }
+exit 0

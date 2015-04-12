@@ -1,0 +1,4 @@
+$netshOutput = (netsh interface ip show dns name="<%= @firstipint %>") | Out-String -Stream
+$firstDNS = $netshOutput[2].Split(':')[1].Trim()
+$secondDNS = $netshOutput[3].Trim()
+if($secondDNS -ne "<%= @dns_secondary %>") { exit 1 }
