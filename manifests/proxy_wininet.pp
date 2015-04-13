@@ -80,8 +80,8 @@ class winnetwork::proxy_wininet (
 
       if ($::architecture == 'x64') {
         # Disable automatic proxy result cache
-        registry::value { 'EnableAutoproxyResultCache':
-          key  => 'HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings',
+        registry::value { 'Wow6432Node EnableAutoproxyResultCache':
+          key  => 'HKLM:\Software\Wow6432Node\Policies\Microsoft\Windows\CurrentVersion\Internet Settings',
           type => 'dword',
           data => '0',
         }
