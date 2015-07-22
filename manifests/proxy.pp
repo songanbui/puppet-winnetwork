@@ -22,20 +22,31 @@ class winnetwork::proxy (
   $proxy_host   = '0.0.0.1',
   $proxy_port   = '80',
   $proxy_bypass = 'localhost;127.0.0.1;',
+  $use_pac      = false,
+  $proxy_pac    = 'http://localhost/proxy.pac',
 ) {
   case $::osfamily {
     'windows': {
       require devxexec
       
-      class { 'winnetwork::proxy_winhttp':
-        proxy_host   => $proxy_host,
-        proxy_port   => $proxy_port,
-        proxy_bypass => $proxy_bypass,
+      if ($use_pac){
+        class { 'winnetwork::proxy::wininetpac':
+          proxy_pac => $proxy_pac,
+          notify    => [File['start IE script'],Exec['start IE']],
+        }
       }
-      class { 'winnetwork::proxy_wininet':
-        proxy_host   => $proxy_host,
-        proxy_port   => $proxy_port,
-        proxy_bypass => $proxy_bypass,
+      else {
+        class { 'winnetwork::proxy::winhttp':
+          proxy_host   => $proxy_host,
+          proxy_port   => $proxy_port,
+          proxy_bypass => $proxy_bypass,
+        }
+        class { 'winnetwork::proxy::wininet':
+          proxy_host   => $proxy_host,
+          proxy_port   => $proxy_port,
+          proxy_bypass => $proxy_bypass,
+          notify       => [File['start IE script'],Exec['start IE']],
+        }
       }
 
       $iescript_path = 'C:\startIE.ps1'
@@ -44,14 +55,12 @@ class winnetwork::proxy (
         path               => $iescript_path,
         source_permissions => ignore,
         source             => 'puppet:///modules/winnetwork/startIE.ps1',
-        subscribe          => Class['winnetwork::proxy_wininet'],
       }
       ->
       exec { 'start IE':
         path        => $::path,
         command     => "${devxexec::path} /user:${devxexec::username} /password:${devxexec::password} /sessionid:1 \"powershell -ExecutionPolicy unrestricted ${iescript_path}\"",
         refreshonly => true,
-        subscribe   => Class['winnetwork::proxy_wininet'],
       }
     }
     default: { fail("${::osfamily} is not a supported platform.") }

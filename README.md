@@ -15,41 +15,80 @@
 
 ## Overview
 
-A one-maybe-two sentence summary of what the module does/what problem it solves.
-This is your 30 second elevator pitch for your module. Consider including
-OS/Puppet version it works with.
+The winnetwork modules manages proxy and DNS settings for Windows machines.
+
+Unlike UNIX systems, Windows does not have a concept of System Proxy but instead applications use either WinINET or WinHTTP library proxy. 
+
+WinINET is an API enabling applications to interact with FTP and HTTP protocols to access Internet resources. It is basically the core of Internet Explorer. It is, with a few exceptions, a superset of WinHTTP. Most applications use the WinINET proxy while services or service-like processes that require impersonation and session isolation use WinHTTP.
+
+Find more information proxy configuration at the following MSDN link: [Understanding Web Proxy Configuration](http://blogs.msdn.com/b/ieinternals/archive/2013/10/11/web-proxy-configuration-and-ie11-changes.aspx)
 
 ## Module Description
 
-If applicable, this section should have a brief description of the technology
-the module integrates with and what that integration enables. This section
-should answer the questions: "What does this module *do*?" and "Why would I use
-it?"
+The winnetwork module manages:
 
-If your module has a range of functionality (installation, configuration,
-management, etc.) this is the time to mention it.
+* proxy settings for Windows WinINET and WinHTTP libraries system-wide
+* primary and secondary DNS
 
 ## Setup
 
 ### What winnetwork affects
 
-* A list of files, packages, services, or operations that the module will alter,
-  impact, or execute on the system it's installed on.
-* This is a great place to stick any warnings.
-* Can be in list or paragraph form.
+* WinINET proxy configuration from registry keys and values
+* WinHTTP proxy configuration from netsh application
+* DNS configuration from netsh application
 
 ### Setup Requirements **OPTIONAL**
 
-If your module requires anything extra before setting up (pluginsync enabled,
-etc.), mention it here.
+##### On the PuppetMaster
+* [puppetlabs/powershell](https://forge.puppetlabs.com/puppetlabs/powershell)
+* [puppetlabs/registry](https://forge.puppetlabs.com/puppetlabs/registry)
+* [songanbui/devxexec](https://github.com/songanbui/puppet-devxexec)
 
 ### Beginning with winnetwork
 
-The very basic steps needed for a user to get the module up and running.
+To configure a proxy by host, port and bypass list for both WinINET and WinHTTP libraries:
+```puppet
+class { 'winnetwork::proxy':
+  $proxy_host   => '0.0.0.1',
+  $proxy_port   => '80',
+  $proxy_bypass => 'localhost;127.0.0.1;',
+}
+```
 
-If your most recent release breaks compatibility or requires particular steps
-for upgrading, you may wish to include an additional section here: Upgrading
-(For an example, see http://forge.puppetlabs.com/puppetlabs/firewall).
+To configure proxy for only WinINET library:
+```puppet
+class { 'winnetwork::proxy::wininet':
+  $proxy_host   => '0.0.0.1',
+  $proxy_port   => '80',
+  $proxy_bypass => 'localhost;127.0.0.1;',
+}
+```
+
+To configure proxy for only WinHTTP library:
+```puppet
+class { 'winnetwork::proxy::winhttp':
+  $proxy_host   => '0.0.0.1',
+  $proxy_port   => '80',
+  $proxy_bypass => 'localhost;127.0.0.1;',
+}
+```
+
+To configure a proxy by an automatic configuration script (PAC file) for WinINET library:
+```puppet
+class { 'winnetwork::proxy::wininetpac':
+  $proxy_pac    = 'http://localhost/proxy.pac',
+}
+```
+*Automatic scripts are not supported by WinHTTP library.*
+
+To configure DNS: 
+```puppet
+class { 'winnetwork::dns':
+  $dns_primary   = '0.0.0.1',
+  $dns_secondary = '0.0.0.2',
+}
+```
 
 ## Usage
 
