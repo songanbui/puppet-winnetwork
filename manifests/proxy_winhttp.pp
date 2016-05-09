@@ -1,4 +1,4 @@
-# == Class: winnetwork::proxy
+# == Class: winnetwork::proxy_winhttp
 #
 # Manages proxy and bypass list for WINHTTP library only
 #
