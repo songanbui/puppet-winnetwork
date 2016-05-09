@@ -1,4 +1,4 @@
-# == Class: winnetwork::proxy
+# == Class: winnetwork::proxy_wininet
 #
 # Manages proxy and bypass list for WININET library only
 #
@@ -81,10 +81,10 @@ class winnetwork::proxy_wininet (
       if ($::architecture == 'x64') {
         # Disable automatic proxy result cache
         registry::value { 'Wow6432Node EnableAutoproxyResultCache':
-          key  => 'HKLM:\Software\Wow6432Node\Policies\Microsoft\Windows\CurrentVersion\Internet Settings',
+          key   => 'HKLM:\Software\Wow6432Node\Policies\Microsoft\Windows\CurrentVersion\Internet Settings',
           value => 'EnableAutoproxyResultCache',
-          type => 'dword',
-          data => '0',
+          type  => 'dword',
+          data  => '0',
         }
         # Apply system-wide proxy settings
         registry::value { 'Wow6432Node ProxySettingsPerUser':
