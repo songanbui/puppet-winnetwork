@@ -1,0 +1,4 @@
+$netshOutput = (netsh advfirewall show public state) | Out-String -Stream
+$firewallState = ($netshOutput[3] -split '\s+').trim()[1]
+if($netshOutput -ne "OFF") { exit 1 }
+exit 0
