@@ -82,6 +82,7 @@ class winnetwork::proxy_wininet (
         # Disable automatic proxy result cache
         registry::value { 'Wow6432Node EnableAutoproxyResultCache':
           key  => 'HKLM:\Software\Wow6432Node\Policies\Microsoft\Windows\CurrentVersion\Internet Settings',
+          value => 'EnableAutoproxyResultCache',
           type => 'dword',
           data => '0',
         }
