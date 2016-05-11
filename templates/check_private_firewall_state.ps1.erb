@@ -1,0 +1,4 @@
+$netshOutput = (netsh advfirewall show private state) | Out-String -Stream
+$firewallState = ($netshOutput[3] -split '\s+').trim()[1]
+if($firewallState -ne "<%=@private_state%>") { exit 1 }
+exit 0

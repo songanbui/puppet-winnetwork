@@ -1,4 +1,4 @@
 $netshOutput = (netsh advfirewall show public state) | Out-String -Stream
 $firewallState = ($netshOutput[3] -split '\s+').trim()[1]
-if($firewallState -ne "OFF") { exit 1 }
+if($firewallState -ne "<%=@public_state%>") { exit 1 }
 exit 0
