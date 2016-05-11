@@ -19,17 +19,33 @@
 # 
 #
 class winnetwork::firewall (
+  $disable_private = false,
   $disable_public = false,
 ) {
   case $::osfamily {
     'windows': {
-      if ($disable_public == true) {
-        exec { 'disable public profile firewall':
+      $private_state = $disable_private ? {
+        true    => 'OFF',
+        false   => 'ON',
+        default => 'ON',
+      }
+      exec { 'private profile firewall':
         path     => $::path,
-        command  => '& netsh advfirewall set publicprofile state off',
-        unless   => template('winnetwork/check_public_firewall_state.ps1.erb'),
+        command  => "& netsh advfirewall set private state ${private_state}",
+        unless   => template('winnetwork/check_private_firewall_state.ps1.erb'),
         provider => powershell,
       }
+
+      $public_state = $disable_public ? {
+        true    => 'OFF',
+        false   => 'ON',
+        default => 'ON',
+      }
+      exec { 'public profile firewall':
+        path     => $::path,
+        command  => "& netsh advfirewall set public state ${public_state}",
+        unless   => template('winnetwork/check_public_firewall_state.ps1.erb'),
+        provider => powershell,
       }
     }
     default: { fail("${::osfamily} is not a supported platform.") }
